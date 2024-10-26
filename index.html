@@ -1,0 +1,24 @@
+<body>
+<script>
+window.onload = function() {
+    // קבלת הטקסט אחרי ה-#
+    let hashText = window.location.hash;
+
+    // בדיקה אם יש תוכן אחרי ה-# 
+    if (!hashText || hashText === '#') {
+        alert("שגיאה: לא נמצא טקסט אחרי # בכתובת האתר.");
+        return;
+    }
+
+    // הסרת התו #
+    hashText = hashText.substring(1);
+
+    // הרכבת ה-URL החדש עם הטקסט אחרי ה-#
+    const newUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfGyh1gnGzzu1-SQk9zX2XlyHMdeO4DwLZXedKJtuiaTaeuzA/viewform?usp=pp_url&entry.1475989505=${hashText}`;
+
+    // ניווט ל-URL החדש באותו חלון
+    window.location.href = newUrl;
+};
+
+  </script>
+</body>
