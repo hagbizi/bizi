@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    text-align: center;
+  }
+
+  .container {
+    width: 70%;
+    margin: auto;
+    background-color: #3369b5; /* גוון מעודן של כחול */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  h1 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .instructions, .error {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+
+  input[type="number"],
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #e0f7f8; /* גוון תכלת בהיר */
+    outline: none;
+    color: #333;
+    font-size: 16px;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button, 
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #fbd687; /* גוון צהוב עדין */
+    color: #3369b5; /* כחול ניגודי עדין */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #ffdcae; /* גוון בהיר יותר להדגשה */
+  }
+
+  #copy_button, #phone_out {
+    display: none;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(51, 105, 181, 0.9);
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .toast.show {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>מגרילים את ביזי!!</h1>
+  <div class="instructions">
+    רוצים להרוויח יותר? בואו להיות שותפים! <br/>
+    מפיצים את ההגרלה לחברים ומקבלים כרטיסים!!<br />
+    <br />
+    ליצירת קישור אישי להפצה הכניסו את מספר הטלפון שלכם ולחצו על "צור קישור"
+  </div>
+  <input type="number" id="phone_in" placeholder="הכנס מספר טלפון" />
+  <button onclick="generateLink()">צור קישור!</button>
+  <input type="text" id="phone_out" placeholder="הקישור האישי שלך יופיע כאן" readonly />
+  <button id="copy_button" onclick="copyLink()">העתק קישור</button>
+
+  <div id="error_message" class="error"></div>
+  <div id="toast" class="toast">הקישור הועתק</div>
+</div>
+
+<script>
+document.getElementById('phone_in').addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    generateLink();
+  }
+});
+
+function generateLink() {
+  let phone = document.getElementById('phone_in').value,
+      errorMessage = document.getElementById('error_message'),
+      phoneOut = document.getElementById('phone_out'),
+      copyButton = document.getElementById('copy_button');
+
+  errorMessage.textContent = ""; 
+  let phoneRegex = /^0\d{9}$/;
+
+  if (!phoneRegex.test(phone)) {
+    errorMessage.textContent = "אנא הזן מספר טלפון תקין (10 ספרות, מתחיל ב-0)";
+    return;
+  }
+
+  phoneOut.value = `https://hagbizi.github.io/bizi#${phone}`;
+  phoneOut.style.display = "inline-block";
+  copyButton.style.display = "inline-block";
+}
+
+function copyLink() {
+  let phoneOut = document.getElementById('phone_out');
+  phoneOut.select();
+  navigator.clipboard.writeText(phoneOut.value).then(() => {
+    let toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  });
+}
+</script>
+
+</body>
+</html>
