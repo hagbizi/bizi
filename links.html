@@ -6,6 +6,7 @@
     font-family: Arial, sans-serif;
     background-color: #f0f4f8;
     text-align: center;
+    margin: 0;
   }
 
   .container {
@@ -85,6 +86,38 @@
 
   .toast.show {
     opacity: 1;
+  }
+
+  /* עיצוב מותאם לסלולר */
+  @media (max-width: 600px) {
+    .container {
+      width: 90%; /* ריווח רחב יותר במסכים קטנים */
+      padding: 15px;
+    }
+
+    h1 {
+      font-size: 26px; /* גודל טקסט גדול יותר */
+    }
+
+    .instructions, .error {
+      font-size: 18px; /* גודל טקסט גדול יותר */
+    }
+
+    input[type="number"],
+    input[type="text"],
+    button {
+      font-size: 16px; /* גודל טקסט גדול יותר לשדות קלט ולחצנים */
+      padding: 12px; /* הגדלת padding */
+    }
+
+    button {
+      padding: 14px; /* הגדלת padding כפתור */
+    }
+
+    .toast {
+      font-size: 18px; /* גודל טקסט גדול יותר להודעת העתקה */
+      padding: 10px 15px; /* הקטנת padding להודעת העתקה */
+    }
   }
 </style>
 </head>
