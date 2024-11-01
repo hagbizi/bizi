@@ -98,6 +98,129 @@
       margin-top: 10px;
     }
   </style>
+
+  //קונפטי
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>קונפטי עם פיצוצים ומזרקות מעודכנות</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    #confettiCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .btn-confetti {
+      position: relative;
+      z-index: 0;
+      padding: 10px 20px;
+      font-size: 18px;
+      color: white;
+      background-color: #4CAF50;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+  </style>
+<script>
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const explosionColors = ['#ff4f81', '#ffbd69', '#55efc4', '#74b9ff', '#a29bfe'];
+  const fountainColors = ['#fdcb6e', '#fd79a8', '#ffeaa7', '#fab1a0', '#b2bec3'];
+  let confettiParticles = [];
+  let explosionInterval, fountainInterval;
+
+  function createConfettiParticle(x, y, speedX, speedY, colorSet) {
+    return {
+      x: x,
+      y: y,
+      width: Math.random() * 8 + 6,
+      height: Math.random() * 12 + 6,
+      color: colorSet[Math.floor(Math.random() * colorSet.length)],
+      speedX: speedX,
+      speedY: speedY,
+      gravity: 0.05,
+      rotation: Math.random() * 360,
+      rotationSpeed: Math.random() * 10 - 5
+    };
+  }
+
+  function createConfettiExplosion(x, y) {
+    for (let i = 0; i < 100; i++) {
+      confettiParticles.push(createConfettiParticle(x, y, (Math.random() - 0.5) * 10, Math.random() * -10, explosionColors));
+    }
+  }
+
+  function createFountainConfetti(x) {
+    for (let i = 0; i < 150; i++) {
+      confettiParticles.push(createConfettiParticle(x, canvas.height, (Math.random() - 0.5) * 5, Math.random() * -20, fountainColors));
+    }
+  }
+
+  function renderConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiParticles.forEach((particle, i) => {
+      particle.x += particle.speedX;
+      particle.y += particle.speedY;
+      particle.speedY += particle.gravity;
+      particle.rotation += particle.rotationSpeed;
+
+      ctx.save();
+      ctx.translate(particle.x, particle.y);
+      ctx.rotate(particle.rotation * Math.PI / 180);
+      ctx.fillStyle = particle.color;
+      ctx.fillRect(-particle.width / 2, -particle.height / 2, particle.width, particle.height);
+      ctx.restore();
+
+      if (particle.y > canvas.height || particle.x < 0 || particle.x > canvas.width) {
+        confettiParticles.splice(i, 1);
+      }
+    });
+    requestAnimationFrame(renderConfetti);
+  }
+
+  function startRandomExplosions() {
+    explosionInterval = setInterval(() => {
+      const randomDelay = Math.random() * 1500;
+      setTimeout(() => createConfettiExplosion(Math.random() * canvas.width, Math.random() * canvas.height), randomDelay);
+    }, 500);
+  }
+
+  function startFountain() {
+    fountainInterval = setInterval(() => {
+      const fountainPositions = [canvas.width * 0.25, canvas.width * 0.5, canvas.width * 0.75];
+      fountainPositions.forEach(position => createFountainConfetti(position));
+    }, 6000);
+  }
+
+  function startConfetti() {
+    startRandomExplosions();
+    startFountain();
+    renderConfetti();
+  }
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
 </head>
 <body>
 
@@ -203,6 +326,7 @@
       document.getElementById('randomData').textContent = randomData;
       document.getElementById('additionalData').textContent = additionalData;
       document.getElementById('popup').style.display = 'block';
+      startConfetti();
     }
   }
 
@@ -214,6 +338,6 @@
     clearInterval(interval);
   }
 </script>
-<script src="https://run.confettipage.com/here.js" data-confetticode="U2FsdGVkX1+/k5+F/kO1ZqJ/JDNWqiH9vs8IDlvGs4BDyBPbXwqBTwvGb2PMsmLlVZbompvKmIJc2pXxMEGCWVREXjg1WWso3EgnDBjNYHX4ti8s/a0/hqIDxVMRyC7JbPFBt3j2QFJJ5HoTs2+j7HTeOfyxL5gFaU2Y0+FcExSSmTqMeXIr9JzsyGeaS/U7gOUypMcBRYgMHXS/cae72hZwBuTuuzGoTaC0CSy+yJHEvcJxDi5gQL8kIIro9KoG/agB7CI5NIKdKds+NVWZv9kHfB+bhKzyARFxsWkkeKTfd7mtigMTXHf4gZpzZ9bSFU4mkoHum463iUAAKmo7zSItfEqnsbZWBifGwJo96CFmQ5ncFJxPw9MMZ1kp3oqwm525eCH7RHklfEOfI6IZqu5tplmGYATSmfyr319URMHv3Vp6GGu3SsibwfZwifWHh6hIQc0/930F989pMS9DoIvQQaXmsVfRD8AoWlOIfHPElLfD7s1I41rs/FCLM+ix38wktomicQK3gqJUVNGOxjXh41GT8xA+8yOeBFKZVS8r36FWct739y87Dq4jc5+NWBO8lbDskMG42D5Sw7CLtmEJ9qeA/HHjhrChNBQoJaHGn+MrTc1jF+up5JGudm8ZLdy493421gXRJP8+45ICnZAiVIJhFz+PUA07xUnhRrQ="></script>
+  <canvas id="confettiCanvas"></canvas>
 </body>
 </html>
