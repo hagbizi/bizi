@@ -3,237 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ספרייה מקוונת</title>
+    <title>ספריה</title>
     <style>
-        body { font-family: Arial, sans-serif; direction: rtl; background-color: #f0f8ff; color: #333; margin: 0; padding: 0; }
-        h1 { text-align: center; color: #4CAF50; padding: 20px; }
-        #books-container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
-        .book-card { width: 250px; border: 1px solid #ddd; padding: 15px; margin: 10px; border-radius: 8px; background-color: #fff; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); transition: transform 0.3s; }
-        .book-card:hover { transform: scale(1.05); }
-        .category { font-weight: bold; color: #4CAF50; margin-top: 20px; font-size: 18px; text-align: center; }
-        .button { padding: 10px 20px; margin-top: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
-        .button:hover { background-color: #45a049; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; }
-        .popup { background: white; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .popup h3 { margin-top: 0; color: #333; }
-        .popup input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .success-message { display: none; background: #4CAF50; color: white; padding: 10px; margin-top: 10px; text-align: center; border-radius: 5px; }
-        .success-message svg { vertical-align: middle; margin-left: 5px; }
-        #bookDetails, #returnBookDetails { font-size: 0.9em; color: #555; text-align: center; margin-top: 5px; }
-        #adminHistory { max-height: 200px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        /* כאן תוכל להוסיף את העיצוב שלך */
+        .card {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            display: inline-block;
+        }
+        #borrowForm {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        #formContainer {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
+    <h1>ברוכים הבאים לספריה</h1>
+    <button id="showDataBtn">הצג נתונים</button>
+    <div id="dataContainer"></div>
 
-<h1>ספרייה מקוונת</h1>
-<div style="text-align: center;">
-    <button onclick="showBorrowForm()" class="button">שאילה</button>
-    <button onclick="showReturnForm()" class="button">החזרה</button>
-    <button onclick="showAdminSection()" class="button">אזור ניהול</button>
-</div>
-<div id="books-container"></div>
-
-<div id="borrowOverlay" class="overlay">
-    <div class="popup">
-        <h3>שאילת ספר</h3>
-        <input type="text" id="borrowCode" placeholder="קוד ספר" oninput="updateBookDetails('borrowCode', 'bookDetails')" required><br>
-        <div id="bookDetails"></div>
-        <input type="text" id="borrowName" placeholder="שם" required><br>
-        <input type="tel" id="borrowPhone" placeholder="טלפון" required><br>
-        <input type="number" id="borrowQuantity" value="1" min="1" placeholder="כמות"><br>
-        <button class="button" onclick="borrowBook()">אישור</button>
-        <button class="button" onclick="closeBorrowForm()">ביטול</button>
-        <div id="borrowSuccess" class="success-message">
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 96 960 960" width="18">
-                <path fill="#fff" d="M405 774 243 612q-12-12-12-30t12-30q12-12 30-12t30 12l102 102 222-222q12-12 30-12t30 12q12 12 12 30t-12 30L435 774q-12 12-30 12t-30-12Z"/>
-            </svg>שאילה בוצעה בהצלחה
+    <div id="borrowForm">
+        <div id="formContainer">
+            <h2>טופס השאלה</h2>
+            <label for="name">שם:</label>
+            <input type="text" id="name" required>
+            <label for="phone">טלפון:</label>
+            <input type="text" id="phone" required>
+            <label for="quantity">כמות:</label>
+            <input type="number" id="quantity" min="1" required>
+            <button id="borrowBtn">שאל ספר</button>
+            <button onclick="document.getElementById('borrowForm').style.display='none'">סגור</button>
         </div>
     </div>
-</div>
 
-<div id="returnOverlay" class="overlay">
-    <div class="popup">
-        <h3>החזרת ספר</h3>
-        <input type="text" id="returnCode" placeholder="קוד ספר" oninput="updateBookDetails('returnCode', 'returnBookDetails')" required><br>
-        <div id="returnBookDetails"></div>
-        <input type="text" id="returnName" placeholder="שם" required><br>
-        <input type="tel" id="returnPhone" placeholder="טלפון" required><br>
-        <input type="number" id="returnQuantity" value="1" min="1" placeholder="כמות"><br>
-        <button class="button" onclick="returnBook()">אישור</button>
-        <button class="button" onclick="closeReturnForm()">ביטול</button>
-        <div id="returnSuccess" class="success-message">
-            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 96 960 960" width="18">
-                <path fill="#fff" d="M405 774 243 612q-12-12-12-30t12-30q12-12 30-12t30 12l102 102 222-222q12-12 30-12t30 12q12 12 12 30t-12 30L435 774q-12 12-30 12t-30-12Z"/>
-            </svg>החזרה בוצעה בהצלחה
-        </div>
-    </div>
-</div>
+    <script>
+        const dataContainer = document.getElementById('dataContainer');
+        const showDataBtn = document.getElementById('showDataBtn');
+        const borrowForm = document.getElementById('borrowForm');
+        const borrowBtn = document.getElementById('borrowBtn');
 
-<div id="adminOverlay" class="overlay">
-    <div class="popup">
-        <h3>אזור מנהל</h3>
-        <div id="adminHistory"></div>
-        <button class="button" onclick="syncLibrary()">עדכון ספריה</button>
-        <button class="button" onclick="closeAdminSection()">סגור</button>
-    </div>
-</div>
-
-<script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlquYBh70DBV66oyKdVjQQ8hIvYllXI23-vTUNz_X6YxdlhDCIU_AL37pNX59PBeI9Dh-Rm0AxZiH7/pub?output=csv';
-    let books = [];
-    let history = JSON.parse(localStorage.getItem('history')) || [];
-    let currentBook = null;
-
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('books')) {
-            books = JSON.parse(localStorage.getItem('books'));
-            renderBooks();
-        } else {
-            fetchBooks();
-        }
-    });
-
-    function fetchBooks() {
-        fetch(csvUrl)
-            .then(response => response.text())
-            .then(data => {
-                books = data.split('\n').slice(1).map(row => {
-                    const [code, name, author, publisher, category, quantity] = row.split(',');
-                    return { code, name, author, publisher, category, quantity: parseInt(quantity) };
-                });
-                localStorage.setItem('books', JSON.stringify(books));
-                renderBooks();
+        // פונקציה להציג נתונים מהקובץ
+        async function fetchData() {
+            const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQlquYBh70DBV66oyKdVjQQ8hIvYllXI23-vTUNz_X6YxdlhDCIU_AL37pNX59PBeI9Dh-Rm0AxZiH7/pub?output=csv');
+            const data = await response.text();
+            const rows = data.split('\n').slice(1);
+            rows.forEach(row => {
+                const cols = row.split(',');
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h3>${cols[0]}</h3><p>זמינות: ${cols[1]}</p><button onclick="showBorrowForm()">שאל ספר</button>`;
+                dataContainer.appendChild(card);
             });
-    }
+            saveDataLocally(data);
+        }
 
-    function renderBooks() {
-        const container = document.getElementById('books-container');
-        container.innerHTML = '';
-        const categories = {};
+        // פונקציה לשמור נתונים ב-localStorage
+        function saveDataLocally(data) {
+            localStorage.setItem('libraryData', data);
+        }
 
-        books.forEach(book => {
-            if (!categories[book.category]) categories[book.category] = [];
-            categories[book.category].push(book);
+        // פונקציה לטעון נתונים מה-localStorage
+        function loadDataFromLocal() {
+            const data = localStorage.getItem('libraryData');
+            if (data) {
+                const rows = data.split('\n').slice(1);
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `<h3>${cols[0]}</h3><p>זמינות: ${cols[1]}</p><button onclick="showBorrowForm()">שאל ספר</button>`;
+                    dataContainer.appendChild(card);
+                });
+            } else {
+                fetchData();
+            }
+        }
+
+        // פונקציה להציג את טופס השאלה
+        function showBorrowForm() {
+            borrowForm.style.display = 'flex';
+        }
+
+        // אירוע לחצן השאלה
+        borrowBtn.addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const quantity = document.getElementById('quantity').value;
+            alert(`תודה, ${name}! השאלת ${quantity} ספרים.`);
+            borrowForm.style.display = 'none';
+            // כאן תוכל להוסיף לוגיקה לעדכון זמינות הספרים
         });
 
-        for (let category in categories) {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'category';
-            categoryDiv.textContent = category;
-            container.appendChild(categoryDiv);
-
-            categories[category].forEach(book => {
-                const card = document.createElement('div');
-                card.className = 'book-card';
-                card.innerHTML = `
-                    <h3>${book.name}</h3>
-                    <p>מאת: ${book.author}</p>
-                    <p>הוצאה: ${book.publisher}</p>
-                    <p>עותקים זמינים: ${book.quantity}</p>
-                    <button class="button" onclick="showBorrowForm('${book.code}')">שאילה</button>
-                    <button class="button" onclick="showReturnForm('${book.code}')">החזרה</button>
-                `;
-                container.appendChild(card);
-            });
-        }
-    }
-
-    function showBorrowForm(code = '') {
-        if (code) {
-            document.getElementById('borrowCode').value = code;
-            updateBookDetails('borrowCode', 'bookDetails');
-        }
-        document.getElementById('borrowOverlay').style.display = 'flex';
-    }
-
-    function showReturnForm(code = '') {
-        if (code) {
-            document.getElementById('returnCode').value = code;
-            updateBookDetails('returnCode', 'returnBookDetails');
-        }
-        document.getElementById('returnOverlay').style.display = 'flex';
-    }
-
-    function updateBookDetails(inputId, detailsId) {
-        const code = document.getElementById(inputId).value;
-        const book = books.find(b => b.code === code);
-        document.getElementById(detailsId).innerText = book ? `${book.name} - ${book.publisher}` : 'לא נמצא ספר';
-    }
-
-    function borrowBook() {
-        const code = document.getElementById('borrowCode').value;
-        const quantity = parseInt(document.getElementById('borrowQuantity').value);
-        const book = books.find(b => b.code === code);
-        if (book && quantity <= book.quantity) {
-            book.quantity -= quantity;
-            history.push({ action: 'שאילה', name: document.getElementById('borrowName').value, phone: document.getElementById('borrowPhone').value, book: `${book.name} - ${book.author}`, date: new Date() });
-            localStorage.setItem('history', JSON.stringify(history));
-            localStorage.setItem('books', JSON.stringify(books));
-            document.getElementById('borrowSuccess').style.display = 'block';
-            setTimeout(closeBorrowForm, 2000);
-            renderBooks();
-        } else {
-            alert('כמות עותקים לא מספיקה');
-        }
-    }
-
-    function returnBook() {
-        const code = document.getElementById('returnCode').value;
-        const quantity = parseInt(document.getElementById('returnQuantity').value);
-        const book = books.find(b => b.code === code);
-        if (book) {
-            book.quantity += quantity;
-            history.push({ action: 'החזרה', name: document.getElementById('returnName').value, phone: document.getElementById('returnPhone').value, book: `${book.name} - ${book.author}`, date: new Date() });
-            localStorage.setItem('history', JSON.stringify(history));
-            localStorage.setItem('books', JSON.stringify(books));
-            document.getElementById('returnSuccess').style.display = 'block';
-            setTimeout(closeReturnForm, 2000);
-            renderBooks();
-        } else {
-            alert('ספר לא נמצא');
-        }
-    }
-
-    function syncLibrary() {
-        fetchBooks();
-    }
-
-    function closeBorrowForm() {
-        document.getElementById('borrowOverlay').style.display = 'none';
-        document.getElementById('borrowSuccess').style.display = 'none';
-    }
-
-    function closeReturnForm() {
-        document.getElementById('returnOverlay').style.display = 'none';
-        document.getElementById('returnSuccess').style.display = 'none';
-    }
-
-    function showAdminSection() {
-        document.getElementById('adminOverlay').style.display = 'flex';
-        renderHistory();
-    }
-
-    function closeAdminSection() {
-        document.getElementById('adminOverlay').style.display = 'none';
-    }
-
-    function renderHistory() {
-        const historyDiv = document.getElementById('adminHistory');
-        historyDiv.innerHTML = history.map(h => `<p><strong>${h.action}:</strong> ${h.name}, ${h.phone}, ${h.book}, ${h.date}</p>`).join('');
-    }
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-    });
-}
-</script>
+        showDataBtn.addEventListener('click', loadDataFromLocal);
+        loadDataFromLocal(); // לטעון נתונים כשדף נטען
+    </script>
 </body>
 </html>
