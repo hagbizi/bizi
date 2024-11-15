@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חיופש כרטיסים | מגרילים את ביזי</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 80%;
+            max-width: 300px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result-item {
+            padding: 10px;
+            margin: 10px auto;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            max-width: 300px;
+        }
+        .result-count {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>חיפוש מזהים לפי שם וטלפון</h1>
+    <form id="searchForm">
+        <label for="name">שם:</label>
+        <input type="text" id="name" placeholder="הכנס שם" required>
+        <label for="phone">טלפון:</label>
+        <input type="text" id="phone" placeholder="הכנס טלפון" required>
+        <button type="submit">חפש</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_gzz1dUCGFh4geBmImGRdigu3zk1bqsv-cQJI6mdtGYcvPmgthI4S-pAqD3vL_AeV8cgaG9Zk6Wsa/pub?gid=1660049709&single=true&output=csv";
+
+        async function fetchCsvData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("שגיאה בטעינת הקובץ");
+                const text = await response.text();
+                return text.split("\n").map(row => row.split(","));
+            } catch (error) {
+                console.error("שגיאה:", error);
+                alert("לא ניתן לטעון נתונים.");
+                return [];
+            }
+        }
+
+        document.getElementById("searchForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";
+
+            if (!name || !phone) {
+                alert("יש להזין שם ומספר טלפון");
+                return;
+            }
+
+            const data = await fetchCsvData(csvUrl);
+
+            console.log("נתונים גולמיים שעובדו:", data);
+
+            // סינון שורות ריקות או לא תקינות
+            const filteredData = data.filter(row => row.length >= 3 && row[1] && row[2]);
+
+            console.log("נתונים מסוננים:", filteredData);
+
+            // חיפוש תוצאות תואמות
+            const filteredResults = filteredData.filter(row => row[1].trim() === name && row[2].trim() === phone);
+
+            console.log("תוצאות חיפוש:", filteredResults);
+
+            if (filteredResults.length === 0) {
+                resultsContainer.innerHTML = "<p>לא נמצאו תוצאות</p>";
+                return;
+            }
+
+            // הצגת מספר התוצאות
+            const resultCount = document.createElement("div");
+            resultCount.classList.add("result-count");
+            resultCount.textContent = `נמצאו ${filteredResults.length} מזהי כרטיסים תואמים:`;
+            resultsContainer.appendChild(resultCount);
+
+            // הצגת תוצאות
+            filteredResults.forEach(row => {
+                const id = row[0];
+                const resultDiv = document.createElement("div");
+                resultDiv.classList.add("result-item");
+                resultDiv.textContent = `מזהה: ${id}`;
+                resultsContainer.appendChild(resultDiv);
+            });
+        });
+    </script>
+</body>
+</html>
