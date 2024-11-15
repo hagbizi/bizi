@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חיופש כרטיסים | מגרילים את ביזי</title>
+    <title>חיפוש כרטיסים | מגרילים את ביזי</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,6 +50,44 @@
     </style>
 </head>
 <body>
+<div id="loading">
+    <div class="spinner"></div>
+    </div>
+    
+    <style>
+    #loading {
+    background-color: #0000008f;
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: fixed;
+    top: 0;
+    }
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e0e0e0; /* צבע רקע */
+  border-top: 5px solid #3498db; /* צבע של האנימציה */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  /* מיקום מדויק במרכז המסך */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+    </style>
     <h1>חיפוש מזהים לפי שם וטלפון</h1>
     <form id="searchForm">
         <label for="name">שם:</label>
@@ -78,6 +116,7 @@
 
         document.getElementById("searchForm").addEventListener("submit", async (e) => {
             e.preventDefault();
+            document.getElementById("loading").style.display = "block";
             const name = document.getElementById("name").value.trim();
             const phone = document.getElementById("phone").value.trim();
             const resultsContainer = document.getElementById("results");
@@ -101,7 +140,7 @@
             const filteredResults = filteredData.filter(row => row[1].trim() === name && row[2].trim() === phone);
 
             console.log("תוצאות חיפוש:", filteredResults);
-
+document.getElementById("loading").style.display = "none";
             if (filteredResults.length === 0) {
                 resultsContainer.innerHTML = "<p>לא נמצאו תוצאות</p>";
                 return;
@@ -118,10 +157,13 @@
                 const id = row[0];
                 const resultDiv = document.createElement("div");
                 resultDiv.classList.add("result-item");
-                resultDiv.textContent = `מזהה: ${id}`;
+                resultDiv.textContent = `מזהה כרטיס: ${id}`;
                 resultsContainer.appendChild(resultDiv);
             });
         });
     </script>
+    
+    
+    
 </body>
 </html>
