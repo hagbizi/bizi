@@ -1,29 +1,50 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XSGKCZYP64"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XSGKCZYP64');
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>חיפוש כרטיסים | מגרילים את ביזי</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            direction: rtl;
-            text-align: center;
-            margin: 20px;
+    background-color: #f0f4f8;
+    text-align: center;
+    margin: 20px;
+    color: #fff;
         }
         form {
-            margin-bottom: 20px;
+            width: 70%;
+    margin: auto;
+    background-color: #3369b5; /* גוון מעודן של כחול */
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         label {
             display: block;
             margin-bottom: 10px;
         }
         input[type="text"] {
-            padding: 10px;
-            margin-bottom: 10px;
             width: 80%;
-            max-width: 300px;
-            box-sizing: border-box;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #e0f7f8; /* גוון תכלת בהיר */
+    outline: none;
+    color: #333;
+    font-size: 16px;
+    -moz-appearance: textfield;
         }
         button {
             padding: 10px 20px;
@@ -46,6 +67,9 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: #333;
+        }
+        #results {
+        color: black;
         }
     </style>
 </head>
@@ -87,9 +111,41 @@
     transform: rotate(360deg);
   }
 }
+h1 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #fbd687; /* גוון צהוב עדין */
+    color: #3369b5; /* כחול ניגודי עדין */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #ffdcae; /* גוון בהיר יותר להדגשה */
+  }
+  
+  p {
+  padding-right: 20%;
+  padding-left: 20%;
+  }
     </style>
-    <h1>חיפוש מזהים לפי שם וטלפון</h1>
     <form id="searchForm">
+    <h1>קבלת מספרי כרטיסים</h1>
+    <div class="instructions">
+    נרשמתם להגרלה? רוצים לגלות מראש מה מספרי הכרטיסים שלכה? <br/>
+    הכניסו שם ומספר טלפון וקבלו את הכרטיסים שלכם!<br />
+    <br />
+    שימו לב שהשם צריך להיות כתוב בדיוק בצורה שבה נרשתמם לדוגמא "ישראל בר-נוי" והמספר צריך להיות בתבנית 0512345678 ללא קידומת וללא מקפים, רק מספרים
+  <br /><br />
+  </div>
         <label for="name">שם:</label>
         <input type="text" id="name" placeholder="הכנס שם" required>
         <label for="phone">טלפון:</label>
@@ -142,14 +198,14 @@
             console.log("תוצאות חיפוש:", filteredResults);
 document.getElementById("loading").style.display = "none";
             if (filteredResults.length === 0) {
-                resultsContainer.innerHTML = "<p>לא נמצאו תוצאות</p>";
+                resultsContainer.innerHTML = "<p>אויש, לא נמצאו כרטיסים מתאימים, בדקו שהפרטים שהזנתם תואמים לתבנית הנדרשת ונסו שוב מאוחר יותר, אם בכל זאת לא מצאתם את הכרטיסים שלכם, מוזמנים לפנות אלינו</p>";
                 return;
             }
 
             // הצגת מספר התוצאות
             const resultCount = document.createElement("div");
             resultCount.classList.add("result-count");
-            resultCount.textContent = `נמצאו ${filteredResults.length} מזהי כרטיסים תואמים:`;
+            resultCount.textContent = `נמצאו ${filteredResults.length} כרטיסים תואמים:`;
             resultsContainer.appendChild(resultCount);
 
             // הצגת תוצאות
